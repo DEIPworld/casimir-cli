@@ -1,0 +1,28 @@
+name: Release
+on:
+ push:
+   branches:
+     - master
+     - develop
+ 
+jobs:
+ release:
+   runs-on: ubuntu-20.04
+   steps:
+ 
+     - name: Checkout source code
+       uses: actions/checkout@v2
+ 
+     - name: Change Node.js version
+       uses: actions/setup-node@v2
+       with:
+         node-version: '14.15.0'
+ 
+     - name: Install
+       run: npm install
+ 
+     - name: Check the permissions for files
+       run: ls -lah
+ 
+     - name: Pre-release or Release
+       run: ./cli.js project release --npm-publish --yes --dry-run
