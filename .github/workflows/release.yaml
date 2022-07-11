@@ -26,3 +26,5 @@ jobs:
  
      - name: Pre-release or Release
        run: ./cli.js project release --npm-publish --yes --dry-run
+       env:
+         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
