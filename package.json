@@ -28,7 +28,6 @@
     "cross-env": "^7.0.3",
     "deepmerge": "^4.2.2",
     "fs-extra": "^10.1.0",
-    "get-package-manager": "^1.0.4",
     "glob": "^8.0.3",
     "inquirer": "^9.0.0",
     "js-yaml": "^4.1.0",
