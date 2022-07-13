@@ -25,6 +25,7 @@
     "chalk": "^5.0.1",
     "chokidar": "^3.5.3",
     "cli-table": "^0.3.11",
+    "cosmiconfig": "^7.0.1",
     "cross-env": "^7.0.3",
     "deepmerge": "^4.2.2",
     "fs-extra": "^10.1.0",
