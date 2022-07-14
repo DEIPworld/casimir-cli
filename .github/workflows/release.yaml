@@ -25,6 +25,11 @@ jobs:
       - name: Install
         run: npm install
  
+      - name: NPM Authorization for Private Registry
+        run: |
+          npm config set //npm-registry.deip.world/:_authToken $NPM_TOKEN
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Pre-release or Release
         run: ./cli.js project release --npm-publish --yes --dry-run
