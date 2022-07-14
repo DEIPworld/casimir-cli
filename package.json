@@ -25,16 +25,16 @@
     "chalk": "^5.0.1",
     "chokidar": "^3.5.3",
     "cli-table": "^0.3.11",
+    "cosmiconfig": "^7.0.1",
     "cross-env": "^7.0.3",
     "deepmerge": "^4.2.2",
     "fs-extra": "^10.1.0",
-    "get-package-manager": "^1.0.4",
     "glob": "^8.0.3",
     "inquirer": "^9.0.0",
     "js-yaml": "^4.1.0",
     "kind-of": "^6.0.3",
     "lerna": "^5.1.8",
-    "npm-check-updates": "^14.1.1",
+    "npm-check-updates": "^15.2.6",
     "ora": "^6.1.2",
     "path": "^0.12.7",
     "semantic-release": "^19.0.3",
@@ -42,22 +42,23 @@
     "shx": "^0.3.4",
     "symlink-dir": "^5.0.1",
     "typescript": "^4.7.4",
-    "vue-template-compiler": "^2.7.3",
+    "vue-template-compiler": "^2.7.5",
     "yargs": "^17.5.1"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.18.2",
-    "@deip/eslint-config": "^1.375.0",
     "eslint": "^8.19.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsx": "^0.1.0",
-    "eslint-plugin-vue": "^9.2.0",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3"
   },
   "lint-staged": {
     "*.{js}": "eslint --fix"
+  },
+  "engines": {
+    "node": "^16.13.0",
+    "npm": "^8.1.0"
   }
 }
