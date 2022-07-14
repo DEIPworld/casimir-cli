@@ -50,5 +50,5 @@ jobs:
         
           git checkout develop
           git pull
-          git pull origin master
+          git merge origin/master --ff
           git push
