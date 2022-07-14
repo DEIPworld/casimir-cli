@@ -13,6 +13,18 @@ jobs:
     runs-on: ubuntu-20.04
     if: github.event.pull_request.merged == true
     steps:
+      
+      - name: Start Slack notification                                
+        uses: rtCamp/action-slack-notify@master                 
+        env: 
+          SLACK_CHANNEL: casimir-dev-notifications                                                  
+          SLACK_MESSAGE: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+          SLACK_TITLE: "${{ github.ref }}: CLI Deployment began!"                  
+          SLACK_USERNAME: 'Github Actions'                           
+          SLACK_COLOR: '#F6F644'                    
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}       
+          MSG_MINIMAL: true 
+          SLACK_ICON: https://image.similarpng.com/very-thumbnail/2021/07/Start-button-icon-on-transparent-background-PNG.png
  
       - name: Checkout source code
         uses: actions/checkout@v2
@@ -40,6 +52,19 @@ jobs:
           GIT_COMMITTER_NAME: ${{ secrets.CASIMIR_USER }}
           GIT_COMMITTER_EMAIL: ${{ secrets.CASIMIR_EMAIL }}
 
+      - name: End Dev Slack notification 
+        if: github.ref == 'develop'                               
+        uses: rtCamp/action-slack-notify@master                 
+        env: 
+          SLACK_CHANNEL: casimir-dev-notifications                                                  
+          SLACK_MESSAGE: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+          SLACK_TITLE: '${{ github.ref }}: CLI Deployment done!'                         
+          SLACK_USERNAME: 'Github Actions'                           
+          SLACK_COLOR: '#53A246'                    
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}       
+          MSG_MINIMAL: true 
+          SLACK_ICON: https://www.citypng.com/public/uploads/preview/hd-green-completed-stamp-png-31625678687md1xcsjx0s.png
+
   update:
     name: Update Develop
     if: github.ref == 'master'
@@ -61,3 +86,47 @@ jobs:
           git pull
           git merge origin/master --ff
           git push
+
+      - name: End Prod Slack notification 
+        uses: rtCamp/action-slack-notify@master                 
+        env: 
+          SLACK_CHANNEL: casimir-dev-notifications                                                  
+          SLACK_MESSAGE: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+          SLACK_TITLE: '${{ github.ref }}: CLI Deployment done!'                         
+          SLACK_USERNAME: 'Github Actions'                           
+          SLACK_COLOR: '#53A246'                    
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}       
+          MSG_MINIMAL: true 
+          SLACK_ICON: https://www.citypng.com/public/uploads/preview/hd-green-completed-stamp-png-31625678687md1xcsjx0s.png
+
+  run-if-release-failed:
+    runs-on: ubuntu-latest
+    needs: [release]
+    if: always() && (needs.release.result == 'failure')
+    steps:
+      - name: Slack notification                                
+        uses: rtCamp/action-slack-notify@master                 
+        env:                                                    
+          SLACK_MESSAGE: "Failed on: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}" 
+          SLACK_TITLE: "${{ github.ref }}:CLI Deployment Failed!"                        
+          SLACK_USERNAME: 'Github Actions'                           
+          SLACK_COLOR: '#E3401C'                    
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}       
+          MSG_MINIMAL: true 
+          SLACK_ICON: https://flyclipart.com/thumbs/fail-stamp-1248408.png
+
+  run-if-update-failed:
+    runs-on: ubuntu-latest
+    needs: [update]
+    if: always() && (needs.update.result == 'failure')
+    steps:
+      - name: Slack notification                                
+        uses: rtCamp/action-slack-notify@master                 
+        env:                                                    
+          SLACK_MESSAGE: "Failed on: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}" 
+          SLACK_TITLE: "${{ github.ref }}: Update Failed!"                        
+          SLACK_USERNAME: 'Github Actions'                           
+          SLACK_COLOR: '#E3401C'                    
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}       
+          MSG_MINIMAL: true 
+          SLACK_ICON: https://flyclipart.com/thumbs/fail-stamp-1248408.png
