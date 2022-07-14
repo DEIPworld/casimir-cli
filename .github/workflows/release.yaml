@@ -35,6 +35,10 @@ jobs:
         run: ./cli.js project release --npm-publish --yes --dry-run
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GIT_AUTHOR_NAME: ${{ secrets.CASIMIR_USER }}
+          GIT_AUTHOR_EMAIL: ${{ secrets.CASIMIR_EMAIL }}
+          GIT_COMMITTER_NAME: ${{ secrets.CASIMIR_USER }}
+          GIT_COMMITTER_EMAIL: ${{ secrets.CASIMIR_EMAIL }}
 
   update:
     name: Update Develop
