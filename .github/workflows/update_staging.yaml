@@ -1,0 +1,70 @@
+name: Update Develop Branch
+
+on:
+  workflow_run:
+    workflows: [Release]
+    branches: [develop]
+    types:
+      - completed
+
+jobs:
+  check:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Check the branch
+        run: |
+          echo ${{github.ref}}
+          echo ${{github.event.workflow_run.conclusion}}
+
+  onsuccess:
+    runs-on: ubuntu-20.04
+    needs: check
+    if: github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Update Develop Branch
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
+          git status
+          git fetch --unshallow
+        
+          
+          git pull
+          git merge origin/staging --ff 
+          git push
+
+      - name: Success Slack notification 
+        uses: rtCamp/action-slack-notify@master                 
+        env: 
+          SLACK_CHANNEL: casimir-dev-notifications                                                  
+          SLACK_MESSAGE: "Update Complete!"
+          SLACK_TITLE: 'Develop Branch'                         
+          SLACK_USERNAME: 'Github Actions'                           
+          SLACK_COLOR: '#53A246'                    
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}       
+          MSG_MINIMAL: true 
+          SLACK_ICON: https://www.citypng.com/public/uploads/preview/hd-green-completed-stamp-png-31625678687md1xcsjx0s.png
+
+  run-if-release-failed:
+    runs-on: ubuntu-latest
+    needs: [onsuccess]
+    if: always() && (needs.onsuccess.result == 'failure')
+    steps:
+      - name: Failure Slack notification                                
+        uses: rtCamp/action-slack-notify@master                 
+        env:  
+          SLACK_CHANNEL: casimir-dev-notifications                                                    
+          SLACK_MESSAGE: "Update Failed" 
+          SLACK_TITLE: 'Develop Branch'                       
+          SLACK_USERNAME: 'Github Actions'                           
+          SLACK_COLOR: '#E3401C'                    
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}       
+          MSG_MINIMAL: true 
+          SLACK_ICON: https://flyclipart.com/thumbs/fail-stamp-1248408.png
