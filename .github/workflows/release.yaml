@@ -20,7 +20,7 @@ jobs:
       - name: Change Node.js version
         uses: actions/setup-node@v2
         with:
-          node-version: '14.15.0'
+          node-version: '16.16.0'
  
       - name: Install
         run: npm install
