@@ -106,7 +106,8 @@ jobs:
     steps:
       - name: Slack notification                                
         uses: rtCamp/action-slack-notify@master                 
-        env:                                                    
+        env:  
+          SLACK_CHANNEL: casimir-dev-notifications                                                    
           SLACK_MESSAGE: "Failed on: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}" 
           SLACK_TITLE: "${{ github.ref }}:CLI Deployment Failed!"                        
           SLACK_USERNAME: 'Github Actions'                           
@@ -122,7 +123,8 @@ jobs:
     steps:
       - name: Slack notification                                
         uses: rtCamp/action-slack-notify@master                 
-        env:                                                    
+        env: 
+          SLACK_CHANNEL: casimir-dev-notifications                                                     
           SLACK_MESSAGE: "Failed on: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}" 
           SLACK_TITLE: "${{ github.ref }}: Update Failed!"                        
           SLACK_USERNAME: 'Github Actions'                           
