@@ -1,0 +1,14 @@
+name: Call a reusable workflow
+on: workflow_dispatch
+
+jobs:
+  test-release:
+    name: Release
+    runs-on: ubuntu-20.04
+    steps:
+      - name: ECHO
+        run: echo XXX
+      - uses: casimir-ai/.github/actions/notify@master
+        with:
+          title: ahahah
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
