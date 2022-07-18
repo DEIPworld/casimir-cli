@@ -1,0 +1,66 @@
+name: Release
+on:
+ pull_request:
+    types:
+      - closed
+    branches:
+      - master
+      - staging
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-20.04
+    if: github.event.pull_request.merged == true
+    steps:
+
+      - name: Start Slack notification  
+        uses: casimir-ai/.github/actions/notify@master
+        with:
+          title: "${{ github.ref }}: CLI Deployment began!"
+          message: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          color: '#2DC0FF'
+
+      - name: Checkout source code
+        uses: actions/checkout@v2
+
+      - name: Make Release
+        uses: casimir-ai/.github/actions/make-release@master
+        with:
+          npm_token: ${{ secrets.NPM_TOKEN }}
+          release_command: ./cli.js project release --npm-publish --yes --no-ci
+
+      - name: Update Staging Branch
+        if: github.ref == 'master'
+        uses: casimir-ai/.github/actions/back-merge@master
+        with:
+          from: master
+          to: staging
+
+      - name: Update Develop Branch
+        uses: casimir-ai/.github/actions/back-merge@master
+        with:
+          from: staging
+          to: develop
+
+      - name: End Slack notification
+        uses: casimir-ai/.github/actions/notify@master
+        with:
+          title: '${{ github.ref }}: CLI Deployment done!' 
+          message: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          color: '#68C41D'
+        
+  run-if-release-failed:
+    runs-on: ubuntu-latest
+    needs: [release]
+    if: always() && (needs.release.result == 'failure')
+    steps:
+      - name: Failure Slack notification
+        uses: casimir-ai/.github/actions/notify@master
+        with:
+          title: "${{ github.ref }}:CLI Deployment Failed!"
+          message: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          color: '#FF5132'
