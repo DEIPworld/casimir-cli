@@ -21,7 +21,6 @@ jobs:
           message: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           color: '#F6F644'
-          channel: casimir-dev-notifications
 
       - name: Checkout source code
         uses: actions/checkout@v2
@@ -52,7 +51,6 @@ jobs:
           message: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           color: '#53A246'
-          channel: casimir-dev-notifications
         
   run-if-release-failed:
     runs-on: ubuntu-latest
@@ -66,4 +64,3 @@ jobs:
           message: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           color: '#E3401C'
-          channel: casimir-dev-notifications
