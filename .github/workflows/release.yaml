@@ -5,130 +5,62 @@ on:
       - closed
     branches:
       - master
-      - develop
- 
+      - staging
+
 jobs:
   release:
     name: Release
     runs-on: ubuntu-20.04
     if: github.event.pull_request.merged == true
     steps:
-      
-      - name: Start Slack notification                                
-        uses: rtCamp/action-slack-notify@master                 
-        env: 
-          SLACK_CHANNEL: casimir-dev-notifications                                                  
-          SLACK_MESSAGE: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-          SLACK_TITLE: "${{ github.ref }}: CLI Deployment began!"                  
-          SLACK_USERNAME: 'Github Actions'                           
-          SLACK_COLOR: '#F6F644'                    
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}       
-          MSG_MINIMAL: true 
-          SLACK_ICON: https://image.similarpng.com/very-thumbnail/2021/07/Start-button-icon-on-transparent-background-PNG.png
- 
+
+      - name: Start Slack notification  
+        uses: casimir-ai/.github/notify@master
+        with:
+          title: "${{ github.ref }}: CLI Deployment began!"
+          message: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          color: '#2DC0FF'
+
       - name: Checkout source code
         uses: actions/checkout@v2
- 
-      - name: Change Node.js version
-        uses: actions/setup-node@v2
+
+      - name: Make Release
+        uses: casimir-ai/.github/make-release@master
         with:
-          node-version: '16.16.0'
- 
-      - name: Install
-        run: npm install
- 
-      - name: NPM Authorization for Private Registry
-        run: |
-          npm config set //npm-registry.deip.world/:_authToken $NPM_TOKEN
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          npm_token: ${{ secrets.NPM_TOKEN }}
+          release_command: ./cli.js project release --npm-publish --yes --dry-run
 
-      - name: Pre-release or Release
-        run: ./cli.js project release --npm-publish --yes --dry-run
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GIT_AUTHOR_NAME: ${{ secrets.CASIMIR_USER }}
-          GIT_AUTHOR_EMAIL: ${{ secrets.CASIMIR_EMAIL }}
-          GIT_COMMITTER_NAME: ${{ secrets.CASIMIR_USER }}
-          GIT_COMMITTER_EMAIL: ${{ secrets.CASIMIR_EMAIL }}
-
-      - name: End Dev Slack notification 
-        if: github.ref == 'develop'                               
-        uses: rtCamp/action-slack-notify@master                 
-        env: 
-          SLACK_CHANNEL: casimir-dev-notifications                                                  
-          SLACK_MESSAGE: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-          SLACK_TITLE: '${{ github.ref }}: CLI Deployment done!'                         
-          SLACK_USERNAME: 'Github Actions'                           
-          SLACK_COLOR: '#53A246'                    
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}       
-          MSG_MINIMAL: true 
-          SLACK_ICON: https://www.citypng.com/public/uploads/preview/hd-green-completed-stamp-png-31625678687md1xcsjx0s.png
-
-  update:
-    name: Update Develop
-    if: github.ref == 'master'
-    needs: release
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Update Staging Branch
+        if: github.ref == 'master'
+        uses: casimir-ai/.github/back-merge@master
+        with:
+          from: master
+          to: staging
 
       - name: Update Develop Branch
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
+        uses: casimir-ai/.github/back-merge@master
+        with:
+          from: staging
+          to: develop
 
-          git status
-          git fetch --unshallow
+      - name: End Slack notification
+        uses: casimir-ai/.github/notify@master
+        with:
+          title: '${{ github.ref }}: CLI Deployment done!' 
+          message: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          color: '#68C41D'
         
-          git checkout develop
-          git pull
-          git merge origin/master --ff
-          git push
-
-      - name: End Prod Slack notification 
-        uses: rtCamp/action-slack-notify@master                 
-        env: 
-          SLACK_CHANNEL: casimir-dev-notifications                                                  
-          SLACK_MESSAGE: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-          SLACK_TITLE: '${{ github.ref }}: CLI Deployment done!'                         
-          SLACK_USERNAME: 'Github Actions'                           
-          SLACK_COLOR: '#53A246'                    
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}       
-          MSG_MINIMAL: true 
-          SLACK_ICON: https://www.citypng.com/public/uploads/preview/hd-green-completed-stamp-png-31625678687md1xcsjx0s.png
-
   run-if-release-failed:
     runs-on: ubuntu-latest
     needs: [release]
     if: always() && (needs.release.result == 'failure')
     steps:
-      - name: Slack notification                                
-        uses: rtCamp/action-slack-notify@master                 
-        env:  
-          SLACK_CHANNEL: casimir-dev-notifications                                                    
-          SLACK_MESSAGE: "Failed on: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}" 
-          SLACK_TITLE: "${{ github.ref }}:CLI Deployment Failed!"                        
-          SLACK_USERNAME: 'Github Actions'                           
-          SLACK_COLOR: '#E3401C'                    
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}       
-          MSG_MINIMAL: true 
-          SLACK_ICON: https://flyclipart.com/thumbs/fail-stamp-1248408.png
-
-  run-if-update-failed:
-    runs-on: ubuntu-latest
-    needs: [update]
-    if: always() && (needs.update.result == 'failure')
-    steps:
-      - name: Slack notification                                
-        uses: rtCamp/action-slack-notify@master                 
-        env: 
-          SLACK_CHANNEL: casimir-dev-notifications                                                     
-          SLACK_MESSAGE: "Failed on: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}" 
-          SLACK_TITLE: "${{ github.ref }}: Update Failed!"                        
-          SLACK_USERNAME: 'Github Actions'                           
-          SLACK_COLOR: '#E3401C'                    
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}       
-          MSG_MINIMAL: true 
-          SLACK_ICON: https://flyclipart.com/thumbs/fail-stamp-1248408.png
+      - name: Failure Slack notification
+        uses: casimir-ai/.github/notify@master
+        with:
+          title: "${{ github.ref }}:CLI Deployment Failed!"
+          message: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          color: '#FF5132'
