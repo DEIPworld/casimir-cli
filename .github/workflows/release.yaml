@@ -33,13 +33,13 @@ jobs:
 
       - name: Update Staging Branch
         if: github.ref == 'master'
-        uses: casimir-ai/.github/back-merge@master
+        uses: casimir-ai/.github/actions/back-merge@master
         with:
           from: master
           to: staging
 
       - name: Update Develop Branch
-        uses: casimir-ai/.github/actions/make-release@master
+        uses: casimir-ai/.github/actions/back-merge@master
         with:
           from: staging
           to: develop
