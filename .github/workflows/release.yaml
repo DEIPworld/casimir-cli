@@ -28,7 +28,7 @@ jobs:
       - name: Make Release
         uses: casimir-ai/.github/actions/make-release@master
         with:
-          npm_token: ${{ secrets.NPM_TOKEN }}
+          npm_token: ${{ secrets.CASIMIR_NPM_TOKEN }}
           release_command: ./cli.js project release --npm-publish --yes --no-ci
           gh_token: ${{ secrets.GITHUB_TOKEN }}
 
