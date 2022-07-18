@@ -14,16 +14,13 @@ jobs:
     if: github.event.pull_request.merged == true
     steps:
 
-      - name: Start Slack notification  
+      - name: Start Slack notification
         uses: casimir-ai/.github/actions/notify@master
         with:
           title: "${{ github.ref }}: CLI Deployment began!"
           message: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           color: '#2DC0FF'
-
-      - name: Checkout source code
-        uses: actions/checkout@v2
 
       - name: Make Release
         uses: casimir-ai/.github/actions/make-release@master
@@ -38,21 +35,23 @@ jobs:
         with:
           from: master
           to: staging
+          gh_token: ${{ secrets.GH_TOKEN }}
 
       - name: Update Develop Branch
         uses: casimir-ai/.github/actions/back-merge@master
         with:
           from: staging
           to: develop
+          gh_token: ${{ secrets.GH_TOKEN }}
 
       - name: End Slack notification
         uses: casimir-ai/.github/actions/notify@master
         with:
-          title: '${{ github.ref }}: CLI Deployment done!' 
+          title: '${{ github.ref }}: CLI Deployment done!'
           message: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           color: '#68C41D'
-        
+
   run-if-release-failed:
     runs-on: ubuntu-latest
     needs: [release]
