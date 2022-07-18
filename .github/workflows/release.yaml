@@ -30,7 +30,7 @@ jobs:
         with:
           npm_token: ${{ secrets.CASIMIR_NPM_TOKEN }}
           release_command: ./cli.js project release --npm-publish --yes --no-ci
-          gh_token: ${{ secrets.GITHUB_TOKEN }}
+          gh_token: ${{ secrets.GH_TOKEN }}
 
       - name: Update Staging Branch
         if: github.ref == 'master'
