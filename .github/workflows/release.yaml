@@ -15,7 +15,7 @@ jobs:
     steps:
 
       - name: Start Slack notification  
-        uses: casimir-ai/.github/notify@master
+        uses: casimir-ai/.github/actions/notify@master
         with:
           title: "${{ github.ref }}: CLI Deployment began!"
           message: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
@@ -26,7 +26,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Make Release
-        uses: casimir-ai/.github/make-release@master
+        uses: casimir-ai/.github/actions/make-release@master
         with:
           npm_token: ${{ secrets.NPM_TOKEN }}
           release_command: ./cli.js project release --npm-publish --yes --dry-run
@@ -39,13 +39,13 @@ jobs:
           to: staging
 
       - name: Update Develop Branch
-        uses: casimir-ai/.github/back-merge@master
+        uses: casimir-ai/.github/actions/make-release@master
         with:
           from: staging
           to: develop
 
       - name: End Slack notification
-        uses: casimir-ai/.github/notify@master
+        uses: casimir-ai/.github/actions/notify@master
         with:
           title: '${{ github.ref }}: CLI Deployment done!' 
           message: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
@@ -58,7 +58,7 @@ jobs:
     if: always() && (needs.release.result == 'failure')
     steps:
       - name: Failure Slack notification
-        uses: casimir-ai/.github/notify@master
+        uses: casimir-ai/.github/actions/notify@master
         with:
           title: "${{ github.ref }}:CLI Deployment Failed!"
           message: "GitHub build from: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
