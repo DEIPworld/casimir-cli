@@ -4,6 +4,13 @@
   "description": "Command line interface for working with Casimir-based projects",
   "author": "Euheny Bondarovich <euheny@gmail.com>",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/casimir-ai/cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/casimir-ai/cli/issues"
+  },
   "scripts": {
     "cas": "./cli.js",
     "lint": "eslint .",
