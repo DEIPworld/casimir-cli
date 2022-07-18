@@ -29,7 +29,7 @@ jobs:
         uses: casimir-ai/.github/actions/make-release@master
         with:
           npm_token: ${{ secrets.NPM_TOKEN }}
-          release_command: ./cli.js project release --npm-publish --yes --dry-run
+          release_command: ./cli.js project release --npm-publish --yes
 
       - name: Update Staging Branch
         if: github.ref == 'master'
