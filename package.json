@@ -1,6 +1,6 @@
 {
   "name": "@casimir/cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Command line interface for working with Casimir-based projects",
   "author": "Euheny Bondarovich <euheny@gmail.com>",
   "main": "index.js",

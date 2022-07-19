@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/casimir-ai/cli/compare/v1.0.0...v1.0.1) (2022-07-19)
+
+
+### Bug Fixes
+
+* lerna commands call confirmation ([d0c5b73](https://github.com/casimir-ai/cli/commit/d0c5b735f3bc0832853857b73a0eeefa65f584a5))
+
 # 1.0.0 (2022-07-18)
 
 
