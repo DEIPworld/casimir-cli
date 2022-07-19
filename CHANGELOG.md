@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/casimir-ai/cli/compare/v1.0.2...v1.0.3) (2022-07-19)
+
+
+### Bug Fixes
+
+* add push to package publish ([3e5a4a4](https://github.com/casimir-ai/cli/commit/3e5a4a444375ed0635a29d06c78f8f6959968858))
+
 ## [1.0.2](https://github.com/casimir-ai/cli/compare/v1.0.1...v1.0.2) (2022-07-19)
 
 
